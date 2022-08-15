@@ -40,7 +40,7 @@ resource eventSubscription 'Microsoft.EventGrid/systemTopics/eventSubscriptions@
       includedEventTypes: [
         'Microsoft.Storage.BlobCreated'
       ]
-      subjectBeginsWith: containerName
+      subjectBeginsWith: '/blobServices/default/containers/${containerName}'
       subjectEndsWith: '.json'
     }
   }
