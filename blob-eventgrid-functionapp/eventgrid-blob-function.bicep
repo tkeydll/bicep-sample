@@ -1,7 +1,6 @@
 param location string = resourceGroup().location
 param storageAccountName string = 'assets${uniqueString(resourceGroup().id)}'
-//param appName string = 'functionapp-${uniqueString(resourceGroup().id)}'
-param appName string = 'deploytest20220815'
+param appName string = 'functionapp-${uniqueString(resourceGroup().id)}'
 param functionName string = 'Function1'
 param containerName string = 'contents'
 
