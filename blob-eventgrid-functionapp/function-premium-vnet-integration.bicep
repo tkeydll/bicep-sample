@@ -91,10 +91,6 @@ resource function 'Microsoft.Web/sites@2022-03-01' = {
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix= ${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
         {
-          name: 'AzureWebJobsSecretStorageType'
-          value: 'blob'
-        }
-        {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value};'
         }
@@ -108,6 +104,8 @@ resource function 'Microsoft.Web/sites@2022-03-01' = {
         }
       ]
       use32BitWorkerProcess: false
+      ftpsState: 'FtpsOnly'
+      http20Enabled: true
     }
   }
   dependsOn: [
