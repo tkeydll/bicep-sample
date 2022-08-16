@@ -1,8 +1,7 @@
-param location string = resourceGroup().location
-
-param vnetName string = 'vnet'
-param defaultSubnetName string = 'DefaultSubnet'
-param functionSubnetName string = 'FunctionSubnet'
+param location string
+param vnetName string
+param functionSubnetName string
+param defaultSubnetName string
 
 var vnetAddressPrefix = '10.0.0.0/16'
 var defaultSubnetAddressPrefix = '10.0.0.0/24'

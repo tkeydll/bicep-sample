@@ -1,9 +1,9 @@
-param location string = resourceGroup().location
+param location string
+param vnetName string
+param functionSubnetName string
+
 param appName string = 'functionapp-${uniqueString(resourceGroup().id)}'
 param runtime string = 'dotnet'
-
-param vnetName string = 'vnet'
-param subnetName string = 'FunctionSubnet'
 
 var functionAppName = appName
 var appServicePlanName = appName
@@ -99,5 +99,5 @@ resource networkConfig 'Microsoft.Web/sites/networkConfig@2022-03-01' = {
 
 resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' existing = {
   parent: virtualNetwork
-  name: subnetName
+  name: functionSubnetName
 }

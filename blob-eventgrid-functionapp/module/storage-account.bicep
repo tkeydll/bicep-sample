@@ -1,8 +1,7 @@
-param location string = resourceGroup().location
+param location string
+param vnetName string
+
 param storageAccountName string = 'assets${uniqueString(resourceGroup().id)}'
-param vnetName string = 'vnet'
-param defaultSubnetName string = 'DefaultSubnet'
-param functionSubnetName string = 'FunctionSubnet'
 
 // Existing VNET
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' existing = {
@@ -20,18 +19,6 @@ resource sa 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   properties: {
     networkAcls: {
       bypass: 'AzureServices'
-      // virtualNetworkRules: [
-      //   {
-      //     id: '${virtualNetwork.id}/subnets/${defaultSubnetName}'
-      //     action: 'Allow'
-      //     state: 'Succeeded'
-      //   }
-      //   {
-      //     id: '${virtualNetwork.id}/subnets/${functionSubnetName}'
-      //     action: 'Allow'
-      //     state: 'Succeeded'
-      //   }
-      // ]
       virtualNetworkRules: any(virtualNetwork.properties.subnets)
       ipRules: []
       defaultAction: 'Deny'
