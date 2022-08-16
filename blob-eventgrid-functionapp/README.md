@@ -1,5 +1,7 @@
 # Provision Blob triggered Function App with Event Grid
 
+![](image/AzureFunctions-EventGrid-BlobTrigger.png)
+
 ## Provision
 
 ### Function App and Blob Storage
