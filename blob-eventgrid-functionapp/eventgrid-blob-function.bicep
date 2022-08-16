@@ -26,7 +26,7 @@ param containerName string = 'container'
 param appName string = 'functionapp-${uniqueString(resourceGroup().id)}'
 
 @description('Function name')
-param functionName string = 'Function1'
+param functionName string
 
 resource functionApp 'Microsoft.Web/sites@2022-03-01' existing = {
   name: appName

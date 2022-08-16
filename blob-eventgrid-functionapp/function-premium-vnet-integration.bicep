@@ -5,39 +5,12 @@ param runtime string = 'dotnet'
 param vnetName string = 'vnet'
 param subnetName string = 'FunctionSubnet'
 
-var vnetAddressPrefix = '10.0.0.0/16'
-var subnetAddressPrefix = '10.0.0.0/24'
 var functionAppName = appName
 var appServicePlanName = appName
 var functionStorageAccountName = 'function${uniqueString(resourceGroup().id)}'
 
-
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' existing = {
   name: vnetName
-  location: location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        vnetAddressPrefix
-      ]
-    }
-    subnets: [
-      {
-        name: subnetName
-        properties: {
-          addressPrefix: subnetAddressPrefix
-          delegations: [
-            {
-              name: 'delegation'
-              properties: {
-                serviceName: 'Microsoft.Web/serverFarms'
-              }
-            }
-          ]
-        }
-      }
-    ]
-  }
 }
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
@@ -47,13 +20,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
     name: 'Standard_LRS'
   }
   kind: 'StorageV2'
-  // properties: {
-  //   publicNetworkAccess: 'Disabled'
-  //   networkAcls: {
-  //     bypass: 'None'
-  //     defaultAction: 'Deny'
-  //   }
-  // }
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
