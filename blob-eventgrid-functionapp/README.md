@@ -2,12 +2,6 @@
 
 ## 手順
 
-### ストレージアカウントの作成
-
-```bash
-az deployment group create -g <resource_group_name> -f storage-account.bicep
-```
-
 ### Function App の作成
 
 ```bash
@@ -15,6 +9,16 @@ az deployment group create -g <resource_group_name> -f function-premium-vnet-int
 ```
 
 ### Function App のデプロイ
+
+```bash
+dotnet publish [options]
+```
+
+### ストレージアカウントの作成
+
+```bash
+az deployment group create -g <resource_group_name> -f storage-account.bicep
+```
 
 
 ### Event Grid の作成

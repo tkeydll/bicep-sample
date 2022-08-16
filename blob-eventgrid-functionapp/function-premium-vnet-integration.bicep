@@ -127,7 +127,7 @@ resource networkConfig 'Microsoft.Web/sites/networkConfig@2022-03-01' = {
   name: 'virtualNetwork'
   properties: {
     subnetResourceId: subnet.id
-    swiftSupported: true    
+    swiftSupported: false
   }
 }
 
