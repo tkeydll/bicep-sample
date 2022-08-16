@@ -8,8 +8,9 @@ param subnetName string = 'FunctionSubnet'
 var vnetAddressPrefix = '10.0.0.0/16'
 var subnetAddressPrefix = '10.0.0.0/24'
 var functionAppName = appName
-var hostingPlanName = appName
-var storageAccountName = '${uniqueString(resourceGroup().id)}functions'
+var appServicePlanName = appName
+var functionStorageAccountName = 'function${uniqueString(resourceGroup().id)}'
+
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
   name: vnetName
@@ -40,12 +41,19 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-01-01' = {
 }
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
-  name: storageAccountName
+  name: functionStorageAccountName
   location: location
   sku: {
     name: 'Standard_LRS'
   }
   kind: 'StorageV2'
+  // properties: {
+  //   publicNetworkAccess: 'Disabled'
+  //   networkAcls: {
+  //     bypass: 'None'
+  //     defaultAction: 'Deny'
+  //   }
+  // }
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
@@ -57,8 +65,8 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource serverFarm 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: hostingPlanName
+resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
+  name: appServicePlanName
   location: location
   sku: {
     name: 'EP1'
@@ -70,14 +78,23 @@ resource serverFarm 'Microsoft.Web/serverfarms@2022-03-01' = {
   }
 }
 
-resource function 'Microsoft.Web/sites@2022-03-01' = {
+resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: functionAppName
   location: location
   kind: 'functionapp'
   properties: {
-    serverFarmId: serverFarm.id
+    serverFarmId: appServicePlan.id
+    httpsOnly: true
     siteConfig: {
       appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
+        }
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: appInsights.properties.InstrumentationKey
@@ -87,25 +104,17 @@ resource function 'Microsoft.Web/sites@2022-03-01' = {
           value: 'InstrumentationKey=${appInsights.properties.InstrumentationKey}'
         }
         {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix= ${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value};'
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: runtime
         }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
         }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: runtime
-        }
       ]
       use32BitWorkerProcess: false
       ftpsState: 'FtpsOnly'
-      http20Enabled: true
+      minTlsVersion: '1.2'
     }
   }
   dependsOn: [
@@ -114,11 +123,11 @@ resource function 'Microsoft.Web/sites@2022-03-01' = {
 }
 
 resource networkConfig 'Microsoft.Web/sites/networkConfig@2022-03-01' = {
-  parent: function
+  parent: functionApp
   name: 'virtualNetwork'
   properties: {
     subnetResourceId: subnet.id
-    swiftSupported: true
+    swiftSupported: true    
   }
 }
 
