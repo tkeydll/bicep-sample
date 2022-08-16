@@ -1,28 +1,23 @@
-# Azure Functions Event Grid BLOB トリガー
+# Provision Blob triggered Function App with Event Grid
 
-## 手順
+## Provision
 
-### Function App の作成
+### Function App and Blob Storage
 
 ```bash
-az deployment group create -g <resource_group_name> -f function-premium-vnet-integration.bicep
+az deployment group create -g <resource_group_name> -f 1-function-and-storage-account.bicep
 ```
 
-### Function App のデプロイ
+### Deploy Function App
 
 ```bash
 dotnet publish [options]
 ```
 
-### ストレージアカウントの作成
+
+
+### Event Grid System Topic
 
 ```bash
-az deployment group create -g <resource_group_name> -f storage-account.bicep
-```
-
-
-### Event Grid の作成
-
-```bash
-az deployment group create -g <resource_group_name> -f eventgrid-blob-function.bicep
+az deployment group create -g <resource_group_name> -f 2-eventgrid-blob-function.bicep
 ```
