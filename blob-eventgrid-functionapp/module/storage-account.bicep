@@ -62,7 +62,7 @@ resource script 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   location: location
   kind: 'AzureCLI'
   properties: {
-    azCliVersion: '2.29.0'
+    azCliVersion: '2.39.0'
     retentionInterval: 'P1D'
     arguments: '${dir1} ${dir2}'
     environmentVariables: [
