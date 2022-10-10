@@ -1,5 +1,6 @@
 param location string = resourceGroup().location
 param webAppName string = 'webapp-${uniqueString(resourceGroup().id)}'
+param planName string = 'plan-${uniqueString(resourceGroup().id)}'
 
 // Get existing vnet and subnet.
 param vnetName string = 'webappvnet'
@@ -12,12 +13,21 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-05-01' existing 
   name: subnetName
 }
 
-output hoge string = subnet.id
+
+resource plan 'Microsoft.Web/serverfarms@2022-03-01' = {
+  name: planName
+  location: location
+  sku: {
+    name: 'B1'
+    tier: 'Basic'
+  }
+}
 
 resource webapp 'Microsoft.Web/sites@2022-03-01' = {
   name: webAppName
   location: location
   properties: {
+    serverFarmId: plan.id
     siteConfig: {
       netFrameworkVersion: 'v4.0'
       metadata: [
